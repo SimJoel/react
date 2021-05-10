@@ -7021,7 +7021,7 @@ const columnsState = atom({
 const colDefsMedalsIncluded = [
   {
     field: "productId",
-    headerName: "품목코드",
+    headerName: "품목ID",
   },
   { field: "productName", headerName: "품명" },
   {
@@ -7049,7 +7049,7 @@ const colDefsMedalsIncluded = [
 const colDefsMedalsExcluded = [
   {
     field: "productId",
-    headerName: "품목코드",
+    headerName: "품목ID",
   },
   { field: "productName", headerName: "품명" },
   {
