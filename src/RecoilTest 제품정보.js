@@ -4,22 +4,6 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
 import axios from "axios";
 import { atom, selector, useRecoilState, useRecoilValue } from "recoil";
-// import {
-//   RichSelectModule,
-//   SetFilterModule,
-//   MenuModule,
-//   ColumnsToolPanelModule,
-// } from "ag-grid-enterprise";
-
-const olympicState = atom({
-  key: "olympicState",
-  default: [],
-});
-
-const columnsState = atom({
-  key: "columnsState",
-  default: [],
-});
 
 const productData = [
   {
@@ -7024,6 +7008,16 @@ const productData = [
   },
 ];
 
+const dataState = atom({
+  key: "dataState",
+  default: productData,
+});
+
+const columnsState = atom({
+  key: "columnsState",
+  default: [],
+});
+
 const colDefsMedalsIncluded = [
   {
     field: "productId",
@@ -7036,20 +7030,20 @@ const colDefsMedalsIncluded = [
     enableRowGroup: true,
     cellEditor: "select",
     filter: "agSetColumnFilter",
+    enableRowGroup: true,
     // refData: productTypeMapping,
     // cellEditorParams: {
     //   values: extractValues(productTypeMapping),
     // },
-    // filterParams: {
-    //   valueFormatter: params => {
-    //     return lookupValue(productTypeMapping, params.value);
-    //   },
-    // },
-    // valueFormatter: params => {
-    //   return lookupValue(productTypeMapping, params.value);
-    // },
+    filterParams: {
+      valueFormatter: params => {
+        return lookupValue(productTypeMapping, params.value);
+      },
+    },
+    valueFormatter: params => {
+      return lookupValue(productTypeMapping, params.value);
+    },
   },
-  { field: "brandName", headerName: "대표품명" },
 ];
 
 const colDefsMedalsExcluded = [
@@ -7068,16 +7062,16 @@ const colDefsMedalsExcluded = [
     // cellEditorParams: {
     //   values: extractValues(productTypeMapping),
     // },
-    // filterParams: {
-    //   valueFormatter: params => {
-    //     return lookupValue(productTypeMapping, params.value);
-    //   },
-    // },
-    // valueFormatter: params => {
-    //   return lookupValue(productTypeMapping, params.value);
-    // },
+    filterParams: {
+      valueFormatter: params => {
+        return lookupValue(productTypeMapping, params.value);
+      },
+    },
+    valueFormatter: params => {
+      return lookupValue(productTypeMapping, params.value);
+    },
   },
-  { field: "brandName", headerName: "대표품명" },
+  { field: "brandName", headerName: "대표품명", enableRowGroup: true },
   { field: "comments", headerName: "규격" },
 ];
 
@@ -7096,13 +7090,13 @@ function extractValues(mappings) {
 }
 
 const RecoilTest = () => {
-  const [rowData, setRowData] = useRecoilState(olympicState);
+  const [rowData, setRowData] = useRecoilState(dataState);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [columns, setColumns] = useRecoilState(columnsState);
 
   const getGridData = () => {
-    setRowData(productData);
+    setRowData(dataState);
   };
 
   const defaultColDef = {
@@ -7118,13 +7112,9 @@ const RecoilTest = () => {
     setGridColumnApi(params.columnApi);
   };
 
-  // useEffect(() => {
-  //   setColumns(colDefsMedalsIncluded);
-  //   getGridData();
-  // }, []);
-
   useEffect(() => {
-    getGridData();
+    setColumns(colDefsMedalsIncluded);
+    //getGridData();
   }, []);
 
   const onBtExcludeMedalColumns = () => {
@@ -7133,9 +7123,6 @@ const RecoilTest = () => {
 
   const onBtIncludeMedalColumns = () => {
     setColumns(colDefsMedalsIncluded);
-  };
-  const onExportClick = () => {
-    gridApi.exportDataAsCsv();
   };
 
   return (
@@ -7150,7 +7137,6 @@ const RecoilTest = () => {
       >
         <button onClick={onBtExcludeMedalColumns}>상세하게 보기</button>
         <button onClick={onBtIncludeMedalColumns}>간략하게 보기</button>
-        <button onClick={onExportClick}>EXPORT</button>
         <AgGridReact
           rowData={rowData}
           defaultColDef={defaultColDef}
